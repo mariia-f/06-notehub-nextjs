@@ -4,15 +4,23 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchNotes } from "@/lib/api";
 import NoteList from "@/components/NoteList/NoteList";
 
-export default function NotesClient() {
+export default function NotesClient({
+  page,
+  search,
+}: {
+  page: number;
+  search: string;
+}) {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["notes"],
-    queryFn: fetchNotes,
+    queryKey: ["notes", page, search],
+    queryFn: () => fetchNotes(page, search),
   });
 
   if (isLoading) return <p>Loading, please wait...</p>;
-  if (error)
-    return <p>Could not fetch the list of notes. {(error as Error).message}</p>;
 
-  return <NoteList notes={data ?? []} />;
+  if (error instanceof Error) {
+    return <p>Error: {error.message}</p>;
+  }
+
+  return <NoteList notes={data?.notes ?? []} />;
 }
