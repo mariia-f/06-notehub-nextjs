@@ -15,9 +15,12 @@ export interface FetchNotesResponse {
   totalPages: number;
 }
 
+/**
+ * NOTES LIST
+ */
 export const fetchNotes = async (
   page: number,
-  search: string
+  search: string = ""
 ): Promise<FetchNotesResponse> => {
   const { data } = await instance.get<FetchNotesResponse>("/notes", {
     params: {
@@ -30,6 +33,17 @@ export const fetchNotes = async (
   return data;
 };
 
+/**
+ * SINGLE NOTE
+ */
+export const fetchNote = async (id: string): Promise<Note> => {
+  const { data } = await instance.get<Note>(`/notes/${id}`);
+  return data;
+};
+
+/**
+ * CREATE NOTE
+ */
 export const createNote = async (
   note: Omit<Note, "id" | "createdAt" | "updatedAt">
 ): Promise<Note> => {
@@ -37,12 +51,9 @@ export const createNote = async (
   return data;
 };
 
-export const deleteNote = async (id: string): Promise<Note> => {
-  const { data } = await instance.delete<Note>(`/notes/${id}`);
-  return data;
-};
-
-export const fetchNote = async (id: string): Promise<Note> => {
-  const { data } = await instance.get<Note>(`/notes/${id}`);
-  return data;
+/**
+ * DELETE NOTE
+ */
+export const deleteNote = async (id: string): Promise<void> => {
+  await instance.delete(`/notes/${id}`);
 };
